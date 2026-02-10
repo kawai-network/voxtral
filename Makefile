@@ -42,7 +42,7 @@ else ifeq ($(UNAME_S),Darwin)
 	# Default on macOS: use Accelerate (no OpenBLAS needed)
 	CMAKE_ARGS+=-DUSE_OPENBLAS=OFF
 else
-	CMAKE_ARGS+=-DUSE_OPENBLAS=ON
+	CMAKE_ARGS+=-DUSE_OPENBLAS=ON -DUSE_METAL=OFF -DUSE_ACCELERATE=OFF
 endif
 
 # Single library target
