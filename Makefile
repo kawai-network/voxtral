@@ -18,6 +18,10 @@ UNAME_S := $(shell uname -s)
 # Shared library extension
 ifeq ($(UNAME_S),Darwin)
 	SO_EXT=dylib
+else ifneq ($(findstring MINGW,$(UNAME_S)),)
+	SO_EXT=dll
+else ifneq ($(findstring MSYS,$(UNAME_S)),)
+	SO_EXT=dll
 else ifeq ($(UNAME_S),Windows_NT)
 	SO_EXT=dll
 else
@@ -50,6 +54,10 @@ endif
 # Single library target
 ifeq ($(UNAME_S),Darwin)
 VARIANT_TARGETS = libgovoxtral.dylib
+else ifneq ($(findstring MINGW,$(UNAME_S)),)
+VARIANT_TARGETS = libgovoxtral.dll
+else ifneq ($(findstring MSYS,$(UNAME_S)),)
+VARIANT_TARGETS = libgovoxtral.dll
 else ifeq ($(UNAME_S),Windows_NT)
 VARIANT_TARGETS = libgovoxtral.dll
 else
@@ -86,6 +94,18 @@ libgovoxtral.dylib: sources/voxtral.c
 	$(info Building voxtral: darwin)
 	SO_TARGET=libgovoxtral.dylib NATIVE=true $(MAKE) libgovoxtral-custom
 	rm -rfv build*
+else ifneq ($(findstring MINGW,$(UNAME_S)),)
+libgovoxtral.dll: sources/voxtral.c
+	$(MAKE) purge
+	$(info Building voxtral: windows)
+	SO_TARGET=libgovoxtral.dll NATIVE=true $(MAKE) libgovoxtral-custom
+	rm -rfv build*
+else ifneq ($(findstring MSYS,$(UNAME_S)),)
+libgovoxtral.dll: sources/voxtral.c
+	$(MAKE) purge
+	$(info Building voxtral: windows)
+	SO_TARGET=libgovoxtral.dll NATIVE=true $(MAKE) libgovoxtral-custom
+	rm -rfv build*
 else ifeq ($(UNAME_S),Windows_NT)
 libgovoxtral.dll: sources/voxtral.c
 	$(MAKE) purge
@@ -108,7 +128,9 @@ libgovoxtral-custom: CMakeLists.txt csrc/govoxtral.c csrc/govoxtral.h
 	cd .. && \
 	(mv build-$(SO_TARGET)/libgovoxtral.so ./$(SO_TARGET) 2>/dev/null || \
 	 mv build-$(SO_TARGET)/libgovoxtral.dylib ./$(SO_TARGET) 2>/dev/null || \
-	 mv build-$(SO_TARGET)/libgovoxtral.dll ./$(SO_TARGET) 2>/dev/null)
+	 mv build-$(SO_TARGET)/libgovoxtral.dll ./$(SO_TARGET) 2>/dev/null || \
+	 mv build-$(SO_TARGET)/Release/govoxtral.dll ./$(SO_TARGET) 2>/dev/null || \
+	 mv build-$(SO_TARGET)/govoxtral.dll ./$(SO_TARGET) 2>/dev/null)
 
 test: voxtral
 	@echo "Running voxtral tests..."
