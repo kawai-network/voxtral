@@ -1,0 +1,53 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-linux:
+    name: Test Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential libopenblas-dev ffmpeg
+
+      - name: Build library
+        run: make libgovoxtral.so
+
+      - name: Run tests (without model)
+        run: go test -v -short ./...
+
+  test-macos:
+    name: Test macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Install dependencies
+        run: brew install cmake ffmpeg
+
+      - name: Build library
+        run: make libgovoxtral.dylib
+
+      - name: Run tests (without model)
+        run: go test -v -short ./...
