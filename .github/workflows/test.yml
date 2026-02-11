@@ -35,28 +35,8 @@ jobs:
           path: voxtral-model
           key: voxtral-model-v1
 
-      - name: Download Voxtral Model
-        if: steps.cache-model.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p voxtral-model
-          MODEL_ID="mistralai/Voxtral-Mini-4B-Realtime-2602"
-          BASE_URL="https://huggingface.co/${MODEL_ID}/resolve/main"
-          
-          FILES=(
-            "consolidated.safetensors"
-            "params.json"
-            "tekken.json"
-          )
-          
-          for file in "${FILES[@]}"; do
-            echo "Downloading ${file}..."
-            curl -L -o "voxtral-model/${file}" "${BASE_URL}/${file}" --progress-bar
-          done
-
-      - name: Run tests with model
-        env:
-          VOXTRAL_MODEL_DIR: ./voxtral-model
-        run: go test -v -timeout 600s ./...
+      - name: Run tests
+        run: bash test.sh
 
   test-macos:
     name: Test macOS
@@ -83,25 +63,5 @@ jobs:
           path: voxtral-model
           key: voxtral-model-v1
 
-      - name: Download Voxtral Model
-        if: steps.cache-model.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p voxtral-model
-          MODEL_ID="mistralai/Voxtral-Mini-4B-Realtime-2602"
-          BASE_URL="https://huggingface.co/${MODEL_ID}/resolve/main"
-          
-          FILES=(
-            "consolidated.safetensors"
-            "params.json"
-            "tekken.json"
-          )
-          
-          for file in "${FILES[@]}"; do
-            echo "Downloading ${file}..."
-            curl -L -o "voxtral-model/${file}" "${BASE_URL}/${file}" --progress-bar
-          done
-
-      - name: Run tests with model
-        env:
-          VOXTRAL_MODEL_DIR: ./voxtral-model
-        run: go test -v -timeout 600s ./...
+      - name: Run tests
+        run: bash test.sh
