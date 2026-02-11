@@ -39,6 +39,8 @@ if(USE_METAL)
     )
 endif()
 
+# Windows DLL requires __declspec(dllexport) for exports
+# Use MODULE for shared library on all platforms
 add_library(govoxtral MODULE csrc/govoxtral.c ${VOXTRAL_SOURCES})
 
 target_include_directories(govoxtral PRIVATE sources/voxtral.c csrc)
@@ -76,6 +78,9 @@ elseif(APPLE)
     # macOS without Metal: use Accelerate framework
     target_compile_definitions(govoxtral PRIVATE USE_BLAS ACCELERATE_NEW_LAPACK)
     target_link_libraries(govoxtral PRIVATE "-framework Accelerate" m)
+elseif(WIN32)
+    # Windows: use basic math library
+    target_link_libraries(govoxtral PRIVATE m)
 else()
     target_link_libraries(govoxtral PRIVATE m)
 endif()

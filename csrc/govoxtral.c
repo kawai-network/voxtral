@@ -1,3 +1,4 @@
+#define GOVOXTRAL_EXPORTS
 #include "govoxtral.h"
 #include "voxtral.h"
 #include "voxtral_audio.h"

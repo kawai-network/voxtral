@@ -18,6 +18,8 @@ UNAME_S := $(shell uname -s)
 # Shared library extension
 ifeq ($(UNAME_S),Darwin)
 	SO_EXT=dylib
+else ifeq ($(UNAME_S),Windows_NT)
+	SO_EXT=dll
 else
 	SO_EXT=so
 endif
@@ -48,6 +50,8 @@ endif
 # Single library target
 ifeq ($(UNAME_S),Darwin)
 VARIANT_TARGETS = libgovoxtral.dylib
+else ifeq ($(UNAME_S),Windows_NT)
+VARIANT_TARGETS = libgovoxtral.dll
 else
 VARIANT_TARGETS = libgovoxtral.so
 endif
@@ -70,7 +74,7 @@ package: voxtral
 build: package
 
 clean: purge
-	rm -rf libgovoxtral.so libgovoxtral.dylib package sources/voxtral.c voxtral
+	rm -rf libgovoxtral.so libgovoxtral.dylib libgovoxtral.dll package sources/voxtral.c voxtral
 
 purge:
 	rm -rf build*
@@ -81,6 +85,12 @@ libgovoxtral.dylib: sources/voxtral.c
 	$(MAKE) purge
 	$(info Building voxtral: darwin)
 	SO_TARGET=libgovoxtral.dylib NATIVE=true $(MAKE) libgovoxtral-custom
+	rm -rfv build*
+else ifeq ($(UNAME_S),Windows_NT)
+libgovoxtral.dll: sources/voxtral.c
+	$(MAKE) purge
+	$(info Building voxtral: windows)
+	SO_TARGET=libgovoxtral.dll NATIVE=true $(MAKE) libgovoxtral-custom
 	rm -rfv build*
 else
 libgovoxtral.so: sources/voxtral.c
@@ -97,7 +107,8 @@ libgovoxtral-custom: CMakeLists.txt csrc/govoxtral.c csrc/govoxtral.h
 	cmake --build . --config Release -j$(JOBS) && \
 	cd .. && \
 	(mv build-$(SO_TARGET)/libgovoxtral.so ./$(SO_TARGET) 2>/dev/null || \
-	 mv build-$(SO_TARGET)/libgovoxtral.dylib ./$(SO_TARGET) 2>/dev/null)
+	 mv build-$(SO_TARGET)/libgovoxtral.dylib ./$(SO_TARGET) 2>/dev/null || \
+	 mv build-$(SO_TARGET)/libgovoxtral.dll ./$(SO_TARGET) 2>/dev/null)
 
 test: voxtral
 	@echo "Running voxtral tests..."

@@ -15,12 +15,15 @@ type LibFuncs struct {
 
 // Init loads the shared library and registers the function pointers.
 // If libPath is empty, it attempts to find the library in the current directory
-// based on the OS (libgovoxtral.dylib or libgovoxtral.so).
+// based on the OS (libgovoxtral.dylib, libgovoxtral.so, or libgovoxtral.dll).
 func Init(libPath string) error {
 	if libPath == "" {
-		if runtime.GOOS == "darwin" {
+		switch runtime.GOOS {
+		case "darwin":
 			libPath = "./libgovoxtral.dylib"
-		} else {
+		case "windows":
+			libPath = "./libgovoxtral.dll"
+		default:
 			libPath = "./libgovoxtral.so"
 		}
 	}
