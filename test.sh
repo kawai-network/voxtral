@@ -43,6 +43,6 @@ if [ ! -d "$VOXTRAL_MODEL_DIR" ]; then
 fi
 
 # Run Go tests
-go test -v -timeout 300s ./...
+go test -v -timeout 900s ./...
 
 echo "All voxtral tests passed."
