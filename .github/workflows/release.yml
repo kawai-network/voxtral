@@ -50,23 +50,25 @@ jobs:
         with:
           files: libgovoxtral.dylib
 
-  build-windows:
-    name: Build Windows (dll)
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          choco install cmake make --installargs 'ADD_CMAKE_TO_PATH=System'
-
-      - name: Build Shared Library
-        run: make libgovoxtral.dll
-        shell: bash
-
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: libgovoxtral.dll
+  # Windows build disabled: voxtral.c upstream doesn't support Windows yet
+  # Missing: sys/time.h, unistd.h, and POSIX APIs
+  # build-windows:
+  #   name: Build Windows (dll)
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Install dependencies
+  #       run: |
+  #         choco install cmake make --installargs 'ADD_CMAKE_TO_PATH=System'
+  #
+  #     - name: Build Shared Library
+  #       run: make libgovoxtral.dll
+  #       shell: bash
+  #
+  #     - name: Upload Release Asset
+  #       uses: softprops/action-gh-release@v1
+  #       if: startsWith(github.ref, 'refs/tags/')
+  #       with:
+  #         files: libgovoxtral.dll
