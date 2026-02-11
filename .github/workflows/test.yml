@@ -39,6 +39,19 @@ jobs:
           path: voxtral-model
           key: voxtral-model-v1
 
+      - name: Cache Sample Audio
+        id: cache-audio
+        uses: actions/cache@v4
+        with:
+          path: test-audio
+          key: sample-audio-v1
+
+      - name: Download Sample Audio
+        if: steps.cache-audio.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p test-audio
+          curl -L -o test-audio/asr_en.wav "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen3-ASR-Repo/asr_en.wav" --progress-bar
+
       - name: Run tests
         run: bash test.sh
 
@@ -70,6 +83,19 @@ jobs:
         with:
           path: voxtral-model
           key: voxtral-model-v1
+
+      - name: Cache Sample Audio
+        id: cache-audio
+        uses: actions/cache@v4
+        with:
+          path: test-audio
+          key: sample-audio-v1
+
+      - name: Download Sample Audio
+        if: steps.cache-audio.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p test-audio
+          curl -L -o test-audio/asr_en.wav "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen3-ASR-Repo/asr_en.wav" --progress-bar
 
       - name: Run tests
         run: bash test.sh

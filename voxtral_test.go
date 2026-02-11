@@ -12,6 +12,7 @@ import (
 
 const (
 	sampleAudio = "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen3-ASR-Repo/asr_en.wav"
+	cachedAudio = "test-audio/asr_en.wav"
 )
 
 func skipIfNoModel(t *testing.T) string {
@@ -71,11 +72,32 @@ func TestAudioTranscription(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	// Download sample audio
+	// Use cached audio if available, otherwise download
 	audioFile := filepath.Join(tmpDir, "sample.wav")
-	t.Log("Downloading sample audio...")
-	if err := downloadFile(sampleAudio, audioFile); err != nil {
-		t.Fatalf("Failed to download sample audio: %v", err)
+	if _, err := os.Stat(cachedAudio); err == nil {
+		t.Log("Using cached audio file...")
+		// Copy cached file
+		src, err := os.Open(cachedAudio)
+		if err != nil {
+			t.Fatalf("Failed to open cached audio: %v", err)
+		}
+		defer src.Close()
+
+		dst, err := os.Create(audioFile)
+		if err != nil {
+			t.Fatalf("Failed to create audio file: %v", err)
+		}
+		defer dst.Close()
+
+		if _, err := io.Copy(dst, src); err != nil {
+			t.Fatalf("Failed to copy cached audio: %v", err)
+		}
+	} else {
+		// Download sample audio
+		t.Log("Downloading sample audio...")
+		if err := downloadFile(sampleAudio, audioFile); err != nil {
+			t.Fatalf("Failed to download sample audio: %v", err)
+		}
 	}
 
 	// Initialize the library
