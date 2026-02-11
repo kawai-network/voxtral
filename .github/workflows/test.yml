@@ -23,10 +23,14 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake build-essential libopenblas-dev ffmpeg
+          sudo apt-get install -y libopenblas-dev ffmpeg
 
-      - name: Build library
-        run: make libgovoxtral.so
+      - name: Download latest library
+        run: |
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/kawai-network/voxtral/releases/latest | grep "tag_name" | cut -d '"' -f 4)
+          echo "Downloading libgovoxtral.so from release ${LATEST_RELEASE}"
+          curl -L -o libgovoxtral.so "https://github.com/kawai-network/voxtral/releases/download/${LATEST_RELEASE}/libgovoxtral.so"
+          chmod +x libgovoxtral.so
 
       - name: Cache Voxtral Model
         id: cache-model
@@ -51,10 +55,14 @@ jobs:
           go-version: '1.25.5'
 
       - name: Install dependencies
-        run: brew install cmake ffmpeg
+        run: brew install ffmpeg
 
-      - name: Build library
-        run: make libgovoxtral.dylib
+      - name: Download latest library
+        run: |
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/kawai-network/voxtral/releases/latest | grep "tag_name" | cut -d '"' -f 4)
+          echo "Downloading libgovoxtral.dylib from release ${LATEST_RELEASE}"
+          curl -L -o libgovoxtral.dylib "https://github.com/kawai-network/voxtral/releases/download/${LATEST_RELEASE}/libgovoxtral.dylib"
+          chmod +x libgovoxtral.dylib
 
       - name: Cache Voxtral Model
         id: cache-model
